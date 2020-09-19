@@ -1,5 +1,5 @@
 //Name:             Ahmed Butt, Muzhda Ehsan
-//Student ID:       100770449
+//Student ID:       100770449, 100770164
 //Last Modified:    September 19, 2020
 //File:             OOP3200-Lab1.cpp
 
@@ -48,7 +48,7 @@ public:
     string ShowWorkTicket();
 };
 
-void dateValidation(double dayMonthYear, const int min, const int max, string dmy);
+void dateValidation(double dayMonthYear, const int min, const int max, string dMY); //to decrease some repeated code
 
 //main() FUNCTION
 int main()
@@ -133,14 +133,14 @@ int main()
 
     return 0;
 }
-void dateValidation(double dayMonthYear, const int min, const int max, string dmy)
+void dateValidation(double dayMonthYear, const int min, const int max, string dMY)
 {
     while (cin.fail() || floor(dayMonthYear) != ceil(dayMonthYear) || dayMonthYear < min || dayMonthYear > max) //if not whole number within range
     {
         cout << " Please try again and enter a whole number between " << min << " and " << max << ".\n";
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout << "\nEnter " << dmy << ": ";
+        cout << "\nEnter " << dMY << ": ";
         cin >> dayMonthYear;
     }
 }
