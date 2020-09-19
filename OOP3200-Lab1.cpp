@@ -6,6 +6,7 @@
 #include <iostream>
 #include <iomanip>	
 #include <sstream>
+#include <string>
 #include <cmath>
 #include <limits>
 #include <stdexcept>
@@ -42,27 +43,10 @@ public:
     void SetIssueDiscription(string issue) { issueDiscription = issue; }
 
     //SetWorkTicket() mutator, sets all attributes of object to parameters if parameters valid...
-    //clientID and issueDiscription must be at least one character, return bool
-    void SetWorkTicket(int number, string id, int day, int month, int year, string issue)
-    {
-        //Check if input is a whole number
-        SetWorkTicketNumber(number);
-
-        //Check if input is at least 1 alpha-numeric character
-        SetClientID(id);
-
-        //Check if day, month, and year inputs are whole numbers
-        SetWorkTicketDate(day, month, year);
-
-        //Check if input is at least 1 character
-        SetIssueDiscription(issue);
-    }
+    bool SetWorkTicket(int number, string id, int day, int month, int year, string issue);
 
     //ShowWorkTicket() accessor, display all object's attributes
-    string ShowWorkTicket()
-    {
-        
-    }
+    string ShowWorkTicket();
 };
 
 void dateValidation(double dayMonthYear, const int min, const int max, string dmy);
@@ -73,63 +57,72 @@ int main()
     //Declarations
     double tempWorkTicketNumber, tempDay, tempMonth, tempYear; //double for floor() and ceil() purposes
     string tempClientID, tempIssueDiscription;
-    int ticketIncrement = 1;
+    int ticketIncrement = 0;
     const int min = 1, dayMax = 31, monthMax = 12, yearMin = 2000, yearMax = 2099;
     WorkTicket client[3];   //array of 3 WorkTicket objects
     //try catch
-
-    //Check if input is a whole number
-    do
+    try
     {
-        cout << "Work Ticket " << ticketIncrement << "\n" << "---------------------------------";
-        cout << "\nEnter a work ticket number: ";
-        cin >> tempWorkTicketNumber;
-        while (cin.fail() || floor(tempWorkTicketNumber) != ceil(tempWorkTicketNumber) || tempWorkTicketNumber < min) // if input not a whole number
+        //Check if input is a whole number
+        do
         {
-            cout << "* Invalid input. Please try again and enter a whole number.\n";
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Work Ticket " << (ticketIncrement + 1) << "\n" << "---------------------------------";
             cout << "\nEnter a work ticket number: ";
             cin >> tempWorkTicketNumber;
+            while (cin.fail() || floor(tempWorkTicketNumber) != ceil(tempWorkTicketNumber) || tempWorkTicketNumber < min) // if input not a whole number
+            {
+                cout << "* Invalid input. Please try again and enter a whole number.\n";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "\nEnter a work ticket number: ";
+                cin >> tempWorkTicketNumber;
+            }
+
+            //Check if input only includes alphanumeric characters
+            cout << "\nEnter a client ID: ";
+            cin >> tempClientID;
+
+            cout << "\nDate\n" << "------------\n";
+
+            //Check if day input is a whole number within range
+            cout << "Enter day: ";
+            cin >> tempDay;
+            dateValidation(tempDay, min, dayMax, "day");
+
+            //Check if month input is a whole number within range
+            cout << "Enter month: ";
+            cin >> tempMonth;
+            dateValidation(tempMonth, min, monthMax, "month");
+
+            //Check if year input is a whole number within range
+            cout << "Enter year: ";
+            cin >> tempYear;
+            dateValidation(tempYear, yearMin, yearMax, "year");
+
+            //Check if input is at least 1 character long
+            cout << "\nEnter an issue discription: ";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            getline(cin, tempIssueDiscription);
+            cout << "\n\n";
+
+            //SetWorkTicket call for specific client, provided all validated variables
+            client[ticketIncrement].SetWorkTicket(tempWorkTicketNumber, tempClientID, tempDay, tempMonth, tempYear, tempIssueDiscription);
+
+            ticketIncrement++; //increment the ticket
+
+        } while (ticketIncrement != 3);
+        //output loop to display all WorkTickets using ShowWorkTicket
+        for (int i = 0; i != ticketIncrement; i++)
+        {
+            cout << "Client " << (i + 1) << "\n-----------------\n" ;
+            cout << client[i].ShowWorkTicket();
+            cout << "\n\n";
         }
-
-        //Check if input only includes alphanumeric characters
-        cout << "\nEnter a client ID: ";
-        cin >> tempClientID;
-
-        cout << "\nDate\n" << "------------\n";
-
-        //Check if day input is a whole number within range
-        cout << "Enter day: ";
-        cin >> tempDay;
-        dateValidation(tempDay, min, dayMax, "day");
-
-        //Check if month input is a whole number within range
-        cout << "Enter month: ";
-        cin >> tempMonth;
-        dateValidation(tempMonth, min, monthMax, "month");
-
-        //Check if year input is a whole number within range
-        cout << "Enter year: ";
-        cin >> tempYear;
-        dateValidation(tempYear, yearMin, yearMax, "year");
-
-        //Check if input is at least 1 character long
-        cout << "\nEnter an issue discription: ";
-        cin >> tempIssueDiscription;
-        cout << "\n\n";
-        cin.clear(); //for some input buffer problems...
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-        //SetWorkTicket call for specific client, provided all validated variables
-        client[0].SetWorkTicket(tempWorkTicketNumber, tempClientID, tempDay, tempMonth, tempYear, tempIssueDiscription);
-
-        //call ShowWorkTicket
-
-        ticketIncrement++; //increment the ticket
-
-    } while (ticketIncrement != 4);
-    //output loop to display all WorkTickets
+    }
+    catch (exception& ia)
+    {
+        cerr << "* Invalid input." << ia.what();
+    }
 
     return 0;
 }
@@ -137,13 +130,32 @@ void dateValidation(double dayMonthYear, const int min, const int max, string dm
 {
     while (cin.fail() || floor(dayMonthYear) != ceil(dayMonthYear) || dayMonthYear < min || dayMonthYear > max)
     {
-        cout << "* Invalid input. Please try again and enter a whole number between" << min << " and " << max << ".\n";
+        cout << " Please try again and enter a whole number between " << min << " and " << max << ".\n";
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "\nEnter " << dmy << ": ";
         cin >> dayMonthYear;
     }
 }
-//trycatch
+bool WorkTicket::SetWorkTicket(int number, string id, int day, int month, int year, string issue)
+{
+    SetWorkTicketNumber(number);
+
+    SetClientID(id);
+
+    SetWorkTicketDate(day, month, year);
+
+    SetIssueDiscription(issue);
+
+    return true;
+}
+string WorkTicket::ShowWorkTicket()
+{
+    stringstream ticket;
+    ticket << "Work Ticket Number: " << workTicketNumber << "\n"
+        << "Client ID: " << clientID << "\n"
+        << "Work Ticket Date: " << workTicketDate[0] << "/" << workTicketDate[1] << "/" << workTicketDate[2] << "\n"
+        << "Issue Discription: " << issueDiscription;
+    return ticket.str();
+}
 //alphanumeric
-//output loop
