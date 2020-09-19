@@ -137,7 +137,7 @@ void dateValidation(double dayMonthYear, const int min, const int max, string dM
 {
     while (cin.fail() || floor(dayMonthYear) != ceil(dayMonthYear) || dayMonthYear < min || dayMonthYear > max) //if not whole number within range
     {
-        cout << " Please try again and enter a whole number between " << min << " and " << max << ".\n";
+        cout << "* Invalid input. Please try again and enter a whole number between " << min << " and " << max << ".\n";
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "\nEnter " << dMY << ": ";
