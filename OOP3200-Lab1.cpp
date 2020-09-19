@@ -1,6 +1,6 @@
-//Name:             Ahmed Butt
+//Name:             Ahmed Butt, Muzhda Ehsan
 //Student ID:       100770449
-//Last Modified:    September 18, 2020
+//Last Modified:    September 19, 2020
 //File:             OOP3200-Lab1.cpp
 
 #include <iostream>
@@ -21,7 +21,6 @@ using namespace std;
 class WorkTicket
 {
 private:
-
     //Variables and thier default vaulues
     int workTicketNumber = 0;
     string clientID = "";
@@ -29,8 +28,8 @@ private:
     string issueDiscription = "";
 
 public:
-
     //Gets; all returning values of variables that hold WorkTicket information
+    //hoenstly, I don't understand the point of these
     int GetWorkTicketNumber() { return workTicketNumber; }
     string GetClientID() { return clientID; }
     int GetWorkTicketDate() { return workTicketDate[0], workTicketDate[1], workTicketDate[2]; }
@@ -59,12 +58,12 @@ int main()
     string tempClientID, tempIssueDiscription;
     int ticketIncrement = 0;
     const int min = 1, dayMax = 31, monthMax = 12, yearMin = 2000, yearMax = 2099;
-    WorkTicket client[3];   //array of 3 WorkTicket objects
-    //try catch
+    const string strDay = "day", strMonth = "month", strYear = "year";
+    WorkTicket client[3];   //array of 3 WorkTicket objects (0, 1, and 2)
+
     try
     {
-        //Check if input is a whole number
-        do
+        do  //do-while loop to increment through each work ticket
         {
             cout << "Work Ticket " << (ticketIncrement + 1) << "\n" << "---------------------------------";
             cout << "\nEnter a work ticket number: ";
@@ -78,45 +77,53 @@ int main()
                 cin >> tempWorkTicketNumber;
             }
 
-            //Check if input only includes alphanumeric characters
             cout << "\nEnter a client ID: ";
-            cin >> tempClientID;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');    //for some input buffer issues with getline()  
+            getline(cin, tempClientID);
+            while (tempClientID.empty() || !regex_search(tempClientID, regex("^[a-zA-Z0-9]*$"))) //check if input is not empty and only includes alphanumeric characters
+            {
+                cout << "* Invalid input. Client ID must be at least one alphanumeric character. Non-alphanumeric characters are not allowed.\n";
+                cout << "\nEnter a client ID: ";
+                getline(cin, tempClientID);
+            }
 
             cout << "\nDate\n" << "------------\n";
 
-            //Check if day input is a whole number within range
             cout << "Enter day: ";
             cin >> tempDay;
-            dateValidation(tempDay, min, dayMax, "day");
+            dateValidation(tempDay, min, dayMax, strDay);    //check if day input is a whole number within range
 
-            //Check if month input is a whole number within range
             cout << "Enter month: ";
             cin >> tempMonth;
-            dateValidation(tempMonth, min, monthMax, "month");
+            dateValidation(tempMonth, min, monthMax, strMonth);  //check if month input is a whole number within range
 
-            //Check if year input is a whole number within range
             cout << "Enter year: ";
             cin >> tempYear;
-            dateValidation(tempYear, yearMin, yearMax, "year");
+            dateValidation(tempYear, yearMin, yearMax, strYear); //check if year input is a whole number within range
 
-            //Check if input is at least 1 character long
             cout << "\nEnter an issue discription: ";
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');    //for some input buffer issues with getline()  
             getline(cin, tempIssueDiscription);
+            while (tempIssueDiscription.empty())    //check if input is at least 1 character long
+            {
+                cout << "* Invalid input. An issue discription must be at least one character long.\n";
+                cout << "\nEnter an issue discription: ";
+                getline(cin, tempIssueDiscription);
+            }
             cout << "\n\n";
 
             //SetWorkTicket call for specific client, provided all validated variables
+            //for some reason it just accepted the double variables without conversion to int
             client[ticketIncrement].SetWorkTicket(tempWorkTicketNumber, tempClientID, tempDay, tempMonth, tempYear, tempIssueDiscription);
 
             ticketIncrement++; //increment the ticket
 
-        } while (ticketIncrement != 3);
-        //output loop to display all WorkTickets using ShowWorkTicket
-        for (int i = 0; i != ticketIncrement; i++)
+        } while (ticketIncrement != 3); //client array goes from 0-2, so 3 would be out of range
+
+        for (int i = 0; i != ticketIncrement; i++)  //output loop to display all WorkTickets using ShowWorkTicket
         {
             cout << "Client " << (i + 1) << "\n-----------------\n" ;
-            cout << client[i].ShowWorkTicket();
-            cout << "\n\n";
+            cout << client[i].ShowWorkTicket() << "\n\n";
         }
     }
     catch (exception& ia)
@@ -128,7 +135,7 @@ int main()
 }
 void dateValidation(double dayMonthYear, const int min, const int max, string dmy)
 {
-    while (cin.fail() || floor(dayMonthYear) != ceil(dayMonthYear) || dayMonthYear < min || dayMonthYear > max)
+    while (cin.fail() || floor(dayMonthYear) != ceil(dayMonthYear) || dayMonthYear < min || dayMonthYear > max) //if not whole number within range
     {
         cout << " Please try again and enter a whole number between " << min << " and " << max << ".\n";
         cin.clear();
@@ -137,19 +144,21 @@ void dateValidation(double dayMonthYear, const int min, const int max, string dm
         cin >> dayMonthYear;
     }
 }
+
 bool WorkTicket::SetWorkTicket(int number, string id, int day, int month, int year, string issue)
 {
-    SetWorkTicketNumber(number);
+    SetWorkTicketNumber(number);    //changing the default value of work ticket number
 
-    SetClientID(id);
+    SetClientID(id);    //changing the default value of id
 
-    SetWorkTicketDate(day, month, year);
+    SetWorkTicketDate(day, month, year);    //changing the default values of work ticket date array
+    
+    SetIssueDiscription(issue); //changing the default value of issue discription
 
-    SetIssueDiscription(issue);
-
-    return true;
+    return true;    //returning true because lab requirements say so lol
 }
-string WorkTicket::ShowWorkTicket()
+
+string WorkTicket::ShowWorkTicket() //displays the work ticket
 {
     stringstream ticket;
     ticket << "Work Ticket Number: " << workTicketNumber << "\n"
@@ -158,4 +167,3 @@ string WorkTicket::ShowWorkTicket()
         << "Issue Discription: " << issueDiscription;
     return ticket.str();
 }
-//alphanumeric
