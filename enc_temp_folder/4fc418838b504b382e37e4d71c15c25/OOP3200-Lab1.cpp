@@ -113,6 +113,7 @@ int main()
             cout << "\n\n";
 
             //SetWorkTicket call for specific client, provided all validated variables
+            //for some reason it just accepted the double variables without conversion to int
             client[ticketIncrement].SetWorkTicket(tempWorkTicketNumber, tempClientID, tempDay, tempMonth, tempYear, tempIssueDiscription);
 
             ticketIncrement++; //increment the ticket
