@@ -2,7 +2,7 @@
 //Student ID:       100770449, 100770164
 //Last Modified:    September 19, 2020
 //File:             OOP3200-Lab1.cpp
-
+//*ANYTHING WITH ASTERISK WAS CHANGED AFTER CREATING VIDEO
 #include <iostream>
 #include <iomanip>	
 #include <sstream>
@@ -47,15 +47,16 @@ public:
     //ShowWorkTicket() accessor, display all object's attributes
     string ShowWorkTicket();
 };
-
-void dateValidation(double dayMonthYear, const int min, const int max, string dMY); //to decrease some repeated code
-
+//*dateValidation() CHANGED TO STRING
+string dateValidation(string dayMonthYear, const int min, const int max, string dMY); //to decrease some repeated code
+string checkIfEmpty(string text); //*ADDED TO DECREASE CODE
 //main() FUNCTION
 int main()
 {
     //Declarations
-    double tempWorkTicketNumber, tempDay, tempMonth, tempYear; //double for floor() and ceil() purposes
-    string tempClientID, tempIssueDiscription;
+    //*SOME VARIABLES CHANGED FROM DOUBLE TO STRING FOR BETTER VALIDATION, PREVIOUS VALIDATION WAS SOMEWHAT FINE
+    //*HOWEVER IT ALLOWED SOME INVALID INPUTS TO GO THROUGH
+    string tempClientID, tempIssueDiscription, tempWorkTicketNumber, tempDay, tempMonth, tempYear;
     int ticketIncrement = 0;
     const int min = 1, dayMax = 31, monthMax = 12, yearMin = 2000, yearMax = 2099;
     const string strDay = "day", strMonth = "month", strYear = "year";
@@ -67,18 +68,17 @@ int main()
         {
             cout << "Work Ticket " << (ticketIncrement + 1) << "\n" << "---------------------------------";
             cout << "\nEnter a work ticket number: ";
-            cin >> tempWorkTicketNumber;
-            while (cin.fail() || floor(tempWorkTicketNumber) != ceil(tempWorkTicketNumber) || tempWorkTicketNumber < min) // if input not a whole number
+            getline(cin, tempWorkTicketNumber);
+            checkIfEmpty(tempWorkTicketNumber);
+            while (!regex_search(tempWorkTicketNumber, regex("^[0-9]*$")) || stoi(tempWorkTicketNumber) < min) // if input not a whole number
             {
-                cout << "* Invalid input. Please try again and enter a whole number.\n";
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "* Invalid input. Please try again and enter a whole number greater than 0.\n";
                 cout << "\nEnter a work ticket number: ";
-                cin >> tempWorkTicketNumber;
+                getline(cin, tempWorkTicketNumber);
+                checkIfEmpty(tempWorkTicketNumber); //*ADDED
             }
 
-            cout << "\nEnter a client ID: ";
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');    //for some input buffer issues with getline()  
+            cout << "\nEnter a client ID: "; 
             getline(cin, tempClientID);
             while (tempClientID.empty() || !regex_search(tempClientID, regex("^[a-zA-Z0-9]*$"))) //check if input is not empty and only includes alphanumeric characters
             {
@@ -87,22 +87,24 @@ int main()
                 getline(cin, tempClientID);
             }
 
-            cout << "\nDate\n" << "------------\n";
+            cout << "\nDate\n" << "------------\n"; //*DATE VALIDATION CHANGED TO MATCH STRING VALIDATION, THEY WERE DOUBLE VARIABLES BEFORE
 
             cout << "Enter day: ";
-            cin >> tempDay;
-            dateValidation(tempDay, min, dayMax, strDay);    //check if day input is a whole number within range
+            getline(cin, tempDay);
+            checkIfEmpty(tempDay);
+            tempDay = dateValidation(tempDay, min, dayMax, strDay);    //check if day input is a whole number within range
 
             cout << "Enter month: ";
-            cin >> tempMonth;
-            dateValidation(tempMonth, min, monthMax, strMonth);  //check if month input is a whole number within range
+            getline(cin, tempMonth);
+            checkIfEmpty(tempMonth);
+            tempMonth = dateValidation(tempMonth, min, monthMax, strMonth);  //check if month input is a whole number within range
 
             cout << "Enter year: ";
-            cin >> tempYear;
-            dateValidation(tempYear, yearMin, yearMax, strYear); //check if year input is a whole number within range
+            getline(cin, tempYear);
+            checkIfEmpty(tempYear);
+            tempYear = dateValidation(tempYear, yearMin, yearMax, strYear); //check if year input is a whole number within range
 
-            cout << "\nEnter an issue discription: ";
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');    //for some input buffer issues with getline()  
+            cout << "\nEnter an issue discription: ";  
             getline(cin, tempIssueDiscription);
             while (tempIssueDiscription.empty())    //check if input is at least 1 character long
             {
@@ -113,7 +115,8 @@ int main()
             cout << "\n\n";
 
             //SetWorkTicket call for specific client, provided all validated variables
-            client[ticketIncrement].SetWorkTicket(tempWorkTicketNumber, tempClientID, tempDay, tempMonth, tempYear, tempIssueDiscription);
+            //*CHANGED TO INCLUDE stoi() TO CONVERT STRING TO INT
+            client[ticketIncrement].SetWorkTicket(stoi(tempWorkTicketNumber), tempClientID, stoi(tempDay), stoi(tempMonth), stoi(tempYear), tempIssueDiscription);
 
             ticketIncrement++; //increment the ticket
 
@@ -129,19 +132,26 @@ int main()
     {
         cerr << "* Invalid input." << ia.what();
     }
-
     return 0;
 }
-void dateValidation(double dayMonthYear, const int min, const int max, string dMY)
+string checkIfEmpty(string text) //*ADDED
 {
-    while (cin.fail() || floor(dayMonthYear) != ceil(dayMonthYear) || dayMonthYear < min || dayMonthYear > max) //if not whole number within range
+    if (text.empty()) //*FOR stoi() PURPOSES
+    {
+        text = "0";
+    }
+    return text;
+}
+string dateValidation(string dayMonthYear, const int min, const int max, string dMY) //*CHANGED TO RETURN STRING
+{
+    while (!regex_search(dayMonthYear, regex("^[0-9]*$")) || stoi(dayMonthYear) < min || stoi(dayMonthYear) > max) //if not whole number within range
     {
         cout << "* Invalid input. Please try again and enter a whole number between " << min << " and " << max << ".\n";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "\nEnter " << dMY << ": ";
-        cin >> dayMonthYear;
+        getline(cin, dayMonthYear); //*CHANGED
+        checkIfEmpty(dayMonthYear); //*ADDED
     }
+    return dayMonthYear;
 }
 
 bool WorkTicket::SetWorkTicket(int number, string id, int day, int month, int year, string issue)
