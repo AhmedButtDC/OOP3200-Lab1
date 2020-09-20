@@ -69,13 +69,13 @@ int main()
             cout << "Work Ticket " << (ticketIncrement + 1) << "\n" << "---------------------------------";
             cout << "\nEnter a work ticket number: ";
             getline(cin, tempWorkTicketNumber);
-            checkIfEmpty(tempWorkTicketNumber);//*THIS IS AN ADDED FUNCTION TO AVOID ISSUES WITH stoi()
+            tempWorkTicketNumber = checkIfEmpty(tempWorkTicketNumber);
             while (!regex_search(tempWorkTicketNumber, regex("^[0-9]*$")) || stoi(tempWorkTicketNumber) < min) // if input not a whole number
             {
                 cout << "* Invalid input. Please try again and enter a whole number greater than 0.\n";
                 cout << "\nEnter a work ticket number: ";
                 getline(cin, tempWorkTicketNumber);
-                checkIfEmpty(tempWorkTicketNumber);
+                tempWorkTicketNumber = checkIfEmpty(tempWorkTicketNumber);
             }
 
             cout << "\nEnter a client ID: "; 
@@ -91,17 +91,17 @@ int main()
 
             cout << "Enter day: ";
             getline(cin, tempDay);
-            checkIfEmpty(tempDay);
+            tempDay = checkIfEmpty(tempDay);
             tempDay = dateValidation(tempDay, min, dayMax, strDay);    //check if day input is a whole number within range
 
             cout << "Enter month: ";
             getline(cin, tempMonth);
-            checkIfEmpty(tempMonth);
+            tempMonth = checkIfEmpty(tempMonth);
             tempMonth = dateValidation(tempMonth, min, monthMax, strMonth);  //check if month input is a whole number within range
 
             cout << "Enter year: ";
             getline(cin, tempYear);
-            checkIfEmpty(tempYear);
+            tempYear = checkIfEmpty(tempYear);
             tempYear = dateValidation(tempYear, yearMin, yearMax, strYear); //check if year input is a whole number within range
 
             cout << "\nEnter an issue discription: ";  
@@ -149,7 +149,7 @@ string dateValidation(string dayMonthYear, const int min, const int max, string 
         cout << "* Invalid input. Please try again and enter a whole number between " << min << " and " << max << ".\n";
         cout << "\nEnter " << dMY << ": ";
         getline(cin, dayMonthYear); //*CHANGED
-        checkIfEmpty(dayMonthYear); //*ADDED
+        dayMonthYear = checkIfEmpty(dayMonthYear); //*ADDED
     }
     return dayMonthYear;
 }
